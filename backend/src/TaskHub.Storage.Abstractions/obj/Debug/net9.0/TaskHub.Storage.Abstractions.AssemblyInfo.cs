@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TaskHub.Storage.Abstractions")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e06c3107c649b1129b7a1089c1f6d57019024c3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+751c26c19d916bad66ac905132ee1e7c45040d27")]
 [assembly: System.Reflection.AssemblyProductAttribute("TaskHub.Storage.Abstractions")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TaskHub.Storage.Abstractions")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
