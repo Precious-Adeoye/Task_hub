@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TaskHub.Core\TaskHub.Core.csproj" />
-    <ProjectReference Include="..\TaskHub.Storage.Abstractions\TaskHub.Storage.Abstractions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
