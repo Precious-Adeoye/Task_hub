@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace TaskHub.Core.Enum
 {
-    internal class TodoStatus
+    public enum TodoStatus
     {
+        Open,
+         Done
     }
 }

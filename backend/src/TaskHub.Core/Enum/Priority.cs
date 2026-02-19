@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TaskHub.Core.Enum
 {
-    internal class Priority
+    public enum Priority
     {
+        Low,
+        Medium,
+        High
     }
 }

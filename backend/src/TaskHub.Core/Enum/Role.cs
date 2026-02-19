@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace TaskHub.Core.Enum
 {
-    internal class Role
+    public enum Role
     {
+        Member,
+        OrgAdmin
     }
 }
