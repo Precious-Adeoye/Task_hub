@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Task_hub.Application.Abstraction;
+using TaskHub.Core.Entities;
+using TaskHub.Core.Enum;
 
 
 
@@ -188,6 +190,6 @@ public class InMemoryStorage : IStorage
         if (to.HasValue)
             query = query.Where(l => l.Timestamp <= to.Value);
 
-        return Task.FromResult(query.OrderByDescending(l => l.Timestamp));
+        return Task.FromResult<IEnumerable<AuditLog>>(query.OrderByDescending(l => l.Timestamp));
     }
 }

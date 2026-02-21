@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -18,8 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Task_hub.Application\Task_hub.Application.csproj" />
     <ProjectReference Include="..\TaskHub.Core\TaskHub.Core.csproj" />
     <ProjectReference Include="..\TaskHub.Infrastructure\TaskHub.Infrastructure.csproj" />
+    <ProjectReference Include="..\TaskHub.Storage.InMemory\TaskHub.Storage.InMemory.csproj" />
   </ItemGroup>
 
 </Project>
