@@ -1,3 +1,14 @@
+# IDE
 .vs/
+
+# .NET
 obj/
 bin/
+
+# Node
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
