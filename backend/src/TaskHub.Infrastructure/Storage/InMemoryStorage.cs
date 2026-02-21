@@ -5,7 +5,7 @@ using TaskHub.Core.Enum;
 
 
 
-namespace TaskHub.Storage.InMemory;
+namespace TaskHub.Infrastructure.Storage;
 
 public class InMemoryStorage : IStorage
 {

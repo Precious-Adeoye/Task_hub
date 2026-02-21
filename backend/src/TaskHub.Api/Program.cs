@@ -5,8 +5,9 @@ using Serilog;
 using Task_hub.Application.Abstraction;
 using Task_hub.Application.Auth;
 using Task_hub.Application.Authorization;
+using Task_hub.Application.Migration;
 using Task_hub.Application.Service;
-using TaskHub.Storage.InMemory;
+using TaskHub.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -53,18 +54,6 @@ builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection(
 builder.Services.AddInMemoryRateLimiting();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
-// Storage - switchable via configuration
-var storageProvider = builder.Configuration.GetValue<string>("StorageProvider");
-if (storageProvider?.ToLower() == "file")
-{
-    // We'll implement File storage later
-    builder.Services.AddSingleton<IStorage, InMemoryStorage>(); // Temporary fallback
-}
-else
-{
-    builder.Services.AddSingleton<IStorage, InMemoryStorage>();
-}
-
 // Services
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -80,6 +69,30 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new OrganisationRequirement(requireAdmin: true)));
 });
 builder.Services.AddSingleton<IAuthorizationHandler, OrganisationAuthorizationHandler>();
+
+// Add this to the services section
+builder.Services.AddSingleton<IMigrationService, MigrationService>();
+
+// Storage - switchable via configuration
+var storageProvider = builder.Configuration.GetValue<string>("StorageProvider");
+if (storageProvider?.ToLower() == "file")
+{
+    builder.Services.AddSingleton<IStorage, FileStorage>();
+
+    // Ensure storage directory exists
+    var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "storage");
+    if (!Directory.Exists(storagePath))
+    {
+        Directory.CreateDirectory(storagePath);
+    }
+
+    Log.Information("Using File Storage Provider");
+}
+else
+{
+    builder.Services.AddSingleton<IStorage, InMemoryStorage>();
+    Log.Information("Using In-Memory Storage Provider");
+}
 
 // CORS for React frontend
 builder.Services.AddCors(options =>
@@ -109,17 +122,6 @@ app.UseIpRateLimiting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-// Ensure storage directory exists for file storage
-if (storageProvider?.ToLower() == "file")
-{
-    var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "storage");
-    if (!Directory.Exists(storagePath))
-    {
-        Directory.CreateDirectory(storagePath);
-    }
-}
-
 
 app.Run();
 
