@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Task_hub.Application.Abstraction;
+using Task_hub.Application.Abstractions;
 using TaskHub.Core.Entities;
 using TaskHub.Core.Enum;
 

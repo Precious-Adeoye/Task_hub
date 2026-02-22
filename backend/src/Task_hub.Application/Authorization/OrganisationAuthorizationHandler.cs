@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Task_hub.Application.Abstraction;
+using Task_hub.Application.Abstractions;
 
 namespace Task_hub.Application.Authorization
 {

@@ -1,0 +1,14 @@
+using System.Security.Claims;
+
+namespace Task_hub.Application.Extensions;
+
+public static class ClaimsPrincipalExtensions
+{
+    public static Guid? GetUserId(this ClaimsPrincipal principal)
+    {
+        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+            return userId;
+        return null;
+    }
+}
