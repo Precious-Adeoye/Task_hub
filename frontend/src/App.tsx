@@ -12,6 +12,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const [userOrgs, setUserOrgs] = useState<Organisation[]>([]);
   const [currentOrg, setCurrentOrg] = useState<Organisation | null>(null);
@@ -51,6 +52,7 @@ function App() {
   const [showAuditLogs, setShowAuditLogs] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(false);
 
   // Add member state
   const [showAddMember, setShowAddMember] = useState(false);
@@ -68,6 +70,7 @@ function App() {
 
   // Check admin status when org or user changes
   useEffect(() => {
+    setIsCurrentUserAdmin(false);
     if (currentOrg && user) {
       checkIfUserIsAdmin();
     }
@@ -81,12 +84,15 @@ function App() {
   }, [currentOrg, filterStatus, filterOverdue, filterTag, showDeleted, sortBy, sortDesc, page]);
 
   const checkIfUserIsAdmin = async () => {
+    setAdminLoading(true);
     try {
       const members = await organisations.getMembers(currentOrg!.id);
       const currentMember = members.data.find((m: any) => m.userId === user?.id);
       setIsCurrentUserAdmin(currentMember?.role === 'OrgAdmin');
     } catch (error) {
       console.error('Failed to check admin status', error);
+    } finally {
+      setAdminLoading(false);
     }
   };
 
@@ -183,18 +189,27 @@ function App() {
   };
 
   const handleToggleTodo = async (todo: Todo) => {
-    setTogglingIds(prev => new Set(prev).add(todo.id));
     setErrorMap(prev => { const m = new Map(prev); m.delete(todo.id); return m; });
+
+    // Optimistic update: immediately toggle status in UI
+    const previousList = [...todoList];
+    setTodoList(todoList.map(t =>
+      t.id === todo.id
+        ? { ...t, status: t.status === 'Done' ? 'Open' : 'Done' }
+        : t
+    ));
+
     try {
       const response = await todos.toggle(todo.id);
-      setTodoList(todoList.map(t =>
+      // Update with server response (has correct version, timestamps, etc.)
+      setTodoList(prev => prev.map(t =>
         t.id === todo.id ? response.data : t
       ));
     } catch (error) {
       console.error('Failed to toggle todo', error);
-      setErrorMap(prev => new Map(prev).set(todo.id, 'Failed to toggle'));
-    } finally {
-      setTogglingIds(prev => { const s = new Set(prev); s.delete(todo.id); return s; });
+      // Rollback to previous state
+      setTodoList(previousList);
+      setErrorMap(prev => new Map(prev).set(todo.id, 'Failed to toggle. Change has been reverted.'));
     }
   };
 
@@ -315,13 +330,22 @@ function App() {
           )}
           <div className="form-group">
             <label>Password:</label>
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-secondary btn-small password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
             {isLogin ? 'Login' : 'Register'}
@@ -567,7 +591,7 @@ function App() {
                     type="checkbox"
                     checked={todo.status === 'Done'}
                     onChange={() => handleToggleTodo(todo)}
-                    disabled={togglingIds.has(todo.id) || isDeleted}
+                    disabled={isDeleted}
                   />
                   <div style={{ flex: 1 }}>
                     <span style={{
@@ -673,7 +697,7 @@ function App() {
       )}
 
       {/* Admin Tools */}
-      {currentOrg && isCurrentUserAdmin && (
+      {currentOrg && isCurrentUserAdmin && !adminLoading && (
         <section className="admin-section">
           <h2>Admin Tools</h2>
 

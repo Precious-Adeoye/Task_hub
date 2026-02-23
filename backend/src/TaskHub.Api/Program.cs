@@ -20,7 +20,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 builder.Services.AddSwaggerDocumentation();
-builder.Services.AddAuthServices();
+builder.Services.AddAuthServices(builder.Environment);
 builder.Services.AddApplicationServices();
 builder.Services.AddRateLimiting(builder.Configuration);
 builder.Services.AddStorageProvider(builder.Configuration);
@@ -30,7 +30,10 @@ var app = builder.Build();
 
 // Pipeline
 app.UseSwaggerDocumentation();
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAppMiddleware();
 
 app.Run();

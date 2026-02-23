@@ -29,7 +29,7 @@ frontend/src/                # React SPA with TypeScript
 
 Clean Architecture with dependency inversion: Api → Application → Core ← Infrastructure.
 
-See `docs/c4-architecture.md` for detailed diagrams.
+See `docs/08-architecture.md` for detailed diagrams.
 
 ## Quick Start
 
@@ -85,7 +85,7 @@ Edit `backend/src/TaskHub.Api/appsettings.json`:
 | Import/Export | `GET/POST /api/v1/importexport/*` | Required + Org | Data import and export |
 | Health | `GET /health/{live,ready}` | Public | Application health |
 
-Full API reference: `docs/api-contract.md`
+Full API reference: `docs/09-api-contract.md`
 
 ## Testing
 
@@ -103,35 +103,38 @@ dotnet test TaskHub.sln
 - **Import/Export** — JSON/CSV export, inline and file import
 - **Authorization** — Unit tests for permission handler
 
-See `docs/testing-strategy.md` for details.
+See `docs/14-test-strategy.md` for details.
 
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [Project Charter](docs/project-charter.md) | Scope, objectives, constraints |
-| [Product Backlog](docs/product-backlog.md) | 96 items across all categories |
-| [Requirements](docs/requirements.md) | 3 personas, functional/non-functional requirements, 8 failure paths |
-| [Estimation](docs/estimation.md) | Story point breakdown (128 total) |
-| [Risk Register](docs/risk-register.md) | 15 risks with mitigations |
-| [Data & Privacy](docs/data-privacy.md) | Data classification, access control, audit |
-| [Research Log](docs/research-log.md) | 12 technical decisions with alternatives |
-| [C4 Architecture](docs/c4-architecture.md) | System context, container, component diagrams |
-| [API Contract](docs/api-contract.md) | All endpoints with request/response examples |
-| [Data Model](docs/data-model.md) | Entity relationships, schema, migrations |
-| [Threat Model](docs/threat-model.md) | STRIDE analysis, attack surface, mitigations |
-| [Dependency Register](docs/dependency-register.md) | All packages with versions and licenses |
-| [Testing Strategy](docs/testing-strategy.md) | Test architecture, patterns, coverage |
-| [Ops Runbook](docs/ops-runbook.md) | Startup, troubleshooting, backup |
+| [Project Charter](docs/01-project-charter.md) | Scope, objectives, constraints |
+| [Product Backlog](docs/02-backlog.md) | 96 items across all categories |
+| [Requirements](docs/05-requirements.md) | 3 personas, functional/non-functional requirements, 8 failure paths |
+| [Estimation](docs/03-estimation-and-plan.md) | Story point breakdown (128 total) |
+| [Risk Register](docs/04-risk-register.md) | 15 risks with mitigations |
+| [Data & Privacy](docs/06-data-and-privacy.md) | Data classification, access control, audit |
+| [Research Log](docs/07-research-log.md) | 12 technical decisions with alternatives |
+| [Architecture](docs/08-architecture.md) | System context, container, component diagrams |
+| [API Contract](docs/09-api-contract.md) | All endpoints with request/response examples |
+| [Data Model](docs/10-data-model-and-state.md) | Entity relationships, schema, migrations |
+| [Threat Model](docs/11-threat-model.md) | STRIDE analysis, attack surface, mitigations |
+| [Dependency Register](docs/13-dependency-register.md) | All packages with versions and licenses |
+| [Testing Strategy](docs/14-test-strategy.md) | Test architecture, patterns, coverage |
+| [Ops Design](docs/12-ops-design.md) | Startup, troubleshooting, backup |
+| [ADRs](docs/adr/) | 9 Architecture Decision Records |
 | [CHANGELOG](CHANGELOG.md) | Version history |
 
 ## Maintenance Scenarios
 
 | Scenario | Document |
 |----------|----------|
-| Bug fix workflow | [maintenance/bugfix-scenario.md](maintenance/bugfix-scenario.md) |
-| Change request workflow | [maintenance/change-request-scenario.md](maintenance/change-request-scenario.md) |
-| Security hardening | [maintenance/security-hardening-scenario.md](maintenance/security-hardening-scenario.md) |
+| Bug fix workflow | [maintenance/01-bug-repro-and-fix.md](maintenance/01-bug-repro-and-fix.md) |
+| Change request workflow | [maintenance/02-archive-change.md](maintenance/02-archive-change.md) |
+| Security hardening | [maintenance/03-auth-abuse-protection.md](maintenance/03-auth-abuse-protection.md) |
+| Release notes | [maintenance/04-release-notes.md](maintenance/04-release-notes.md) |
+| Post-incident report | [maintenance/05-post-incident-report.md](maintenance/05-post-incident-report.md) |
 
 ## Tech Stack
 

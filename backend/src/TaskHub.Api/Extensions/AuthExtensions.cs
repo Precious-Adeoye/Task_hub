@@ -14,15 +14,17 @@ public static class AuthExtensions
     /// robust CSRF protection without a separate anti-forgery token.
     /// See: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
     /// </summary>
-    public static IServiceCollection AddAuthServices(this IServiceCollection services)
+    public static IServiceCollection AddAuthServices(this IServiceCollection services, IWebHostEnvironment environment)
     {
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
                 // HttpOnly: prevents JavaScript access to the cookie (mitigates XSS cookie theft)
                 options.Cookie.HttpOnly = true;
-                // Secure=Always: cookie only sent over HTTPS (prevents sniffing)
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                // In Development, allow cookies over HTTP; in Production, require HTTPS
+                options.Cookie.SecurePolicy = environment.IsDevelopment()
+                    ? CookieSecurePolicy.SameAsRequest
+                    : CookieSecurePolicy.Always;
                 // SameSite=Strict: cookie never sent on cross-site requests (CSRF protection)
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.Cookie.Name = "TaskHub.Auth";
@@ -31,6 +33,11 @@ public static class AuthExtensions
                 options.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = 403;
                     return Task.CompletedTask;
                 };
             });

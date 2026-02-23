@@ -3,21 +3,21 @@ import { Todo } from './types';
 
 export const todos = {
   getAll: (params?: any) =>
-    api.get<Todo[]>('/todos', { params }),
+    api.get<Todo[]>('/todo', { params }),
   getOne: (id: string) =>
-    api.get<Todo>(`/todos/${id}`),
+    api.get<Todo>(`/todo/${id}`),
   create: (data: any) =>
-    api.post<Todo>('/todos', data),
+    api.post<Todo>('/todo', data),
   update: (id: string, data: any, version: string) =>
-    api.put(`/todos/${id}`, data, {
+    api.put(`/todo/${id}`, data, {
       headers: { 'If-Match': `"${version}"` },
     }),
   toggle: (id: string) =>
-    api.patch(`/todos/${id}/toggle`),
+    api.patch(`/todo/${id}/toggle`),
   softDelete: (id: string) =>
-    api.delete(`/todos/${id}/soft`),
+    api.delete(`/todo/${id}/soft`),
   restore: (id: string) =>
-    api.post(`/todos/${id}/restore`),
+    api.post(`/todo/${id}/restore`),
   hardDelete: (id: string) =>
-    api.delete(`/todos/${id}`),
+    api.delete(`/todo/${id}`),
 };

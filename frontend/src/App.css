@@ -118,6 +118,32 @@ body {
   font-size: 12px;
 }
 
+/* Password Toggle */
+.password-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.password-input-wrapper input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.password-toggle {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 /* Organisation Section */
 .org-section {
   background: white;
