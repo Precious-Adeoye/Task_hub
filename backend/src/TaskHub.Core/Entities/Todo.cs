@@ -21,6 +21,7 @@ namespace TaskHub.Core.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? DeletedAt { get; set; }
+        public Guid? AssignedTo { get; set; }
         public string Version { get; set; } = Guid.NewGuid().ToString(); // For ETag/optimistic concurrency
 
         // Navigation properties

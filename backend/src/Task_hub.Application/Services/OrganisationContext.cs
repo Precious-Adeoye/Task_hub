@@ -39,6 +39,14 @@ namespace Task_hub.Application.Services
                     return orgId;
                 }
 
+                // Try to get from route data (e.g. /organisations/{id}/members)
+                var routeValue = _httpContextAccessor.HttpContext?.Request.RouteValues["id"]?.ToString();
+                if (Guid.TryParse(routeValue, out orgId))
+                {
+                    _cachedOrganisationId = orgId;
+                    return orgId;
+                }
+
                 return null;
             }
         }

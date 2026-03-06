@@ -1,4 +1,5 @@
 using TaskHub.Core.Entities;
+using TaskHub.Core.Enum;
 
 namespace Task_hub.Application.Abstractions
 {
@@ -27,9 +28,17 @@ namespace Task_hub.Application.Abstractions
         // Todos
         Task<Todo?> GetTodoByIdAsync(Guid id, Guid organisationId);
         Task<IEnumerable<Todo>> GetTodosAsync(Guid organisationId, TodoFilter? filter = null);
+        Task<IEnumerable<Todo>> GetTodosAssignedToUserAsync(Guid userId, Guid organisationId);
         Task AddTodoAsync(Todo todo);
         Task UpdateTodoAsync(Todo todo);
         Task DeleteTodoAsync(Guid id, Guid organisationId); // Hard delete
+
+        // Invitations
+        Task<Invitation?> GetInvitationByIdAsync(Guid id);
+        Task<IEnumerable<Invitation>> GetOrganisationInvitationsAsync(Guid organisationId);
+        Task<IEnumerable<Invitation>> GetPendingInvitationsForEmailAsync(string email);
+        Task AddInvitationAsync(Invitation invitation);
+        Task UpdateInvitationAsync(Invitation invitation);
 
         // Audit Logs
         Task AddAuditLogAsync(AuditLog log);

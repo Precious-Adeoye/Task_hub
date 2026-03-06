@@ -23,8 +23,8 @@ public class CreateTodoRequestValidator : AbstractValidator<CreateTodoRequest>
             .WithMessage("Tags can only contain letters, numbers, hyphens, and underscores");
 
         RuleFor(x => x.DueDate)
-            .Must(date => !date.HasValue || date.Value > DateTime.UtcNow)
-            .WithMessage("Due date must be in the future");
+            .Must(date => !date.HasValue || date.Value.Date >= DateTime.UtcNow.AddHours(-14).Date)
+            .WithMessage("Due date must not be in the past");
     }
 }
 
@@ -49,8 +49,8 @@ public class UpdateTodoRequestValidator : AbstractValidator<UpdateTodoRequest>
             .When(x => x.Tags != null);
 
         RuleFor(x => x.DueDate)
-            .Must(date => !date.HasValue || date.Value > DateTime.UtcNow)
-            .WithMessage("Due date must be in the future")
+            .Must(date => !date.HasValue || date.Value.Date >= DateTime.UtcNow.AddHours(-14).Date)
+            .WithMessage("Due date must not be in the past")
             .When(x => x.DueDate.HasValue);
     }
 }

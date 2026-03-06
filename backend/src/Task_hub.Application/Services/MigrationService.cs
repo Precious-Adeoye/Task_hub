@@ -31,6 +31,13 @@ namespace Task_hub.Application.Services
                 currentVersion = 2;
             }
 
+            if (currentVersion == 2)
+            {
+                _logger.LogInformation("Migrating schema from v2 to v3");
+                schema = MigrateV2ToV3(schema);
+                currentVersion = 3;
+            }
+
             schema.SchemaVersion = currentVersion;
             schema.LastModified = DateTime.UtcNow;
 
@@ -58,6 +65,20 @@ namespace Task_hub.Application.Services
                 {
                     todo.Description = "";
                 }
+            }
+
+            return schema;
+        }
+
+        private FileStorageSchema MigrateV2ToV3(FileStorageSchema schema)
+        {
+            // Initialize Invitations dictionary if null
+            schema.Invitations ??= new Dictionary<Guid, InvitationData>();
+
+            // Set AssignedTo = null for all existing todos (already default)
+            foreach (var todo in schema.Todos.Values)
+            {
+                // AssignedTo is already nullable and defaults to null
             }
 
             return schema;

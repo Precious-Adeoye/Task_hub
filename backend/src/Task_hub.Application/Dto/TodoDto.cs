@@ -21,6 +21,7 @@ namespace TaskHub.Api.Dto
         public Priority Priority { get; set; } = Priority.Medium;
         public List<string> Tags { get; set; } = new();
         public DateTime? DueDate { get; set; }
+        public Guid? AssignedTo { get; set; }
     }
 
     public class UpdateTodoRequest
@@ -30,6 +31,12 @@ namespace TaskHub.Api.Dto
         public Priority? Priority { get; set; }
         public List<string>? Tags { get; set; }
         public DateTime? DueDate { get; set; }
+        public Guid? AssignedTo { get; set; }
+    }
+
+    public class AssignTaskRequest
+    {
+        public Guid? AssignedTo { get; set; }
     }
 
     public class TodoResponse
@@ -44,6 +51,8 @@ namespace TaskHub.Api.Dto
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public Guid? AssignedTo { get; set; }
+        public string? AssignedToUsername { get; set; }
         public string Version { get; set; } = string.Empty;
     }
 }

@@ -20,4 +20,6 @@ export const todos = {
     api.post(`/todo/${id}/restore`),
   hardDelete: (id: string) =>
     api.delete(`/todo/${id}`),
+  assign: (id: string, assignedTo: string | null) =>
+    api.patch<Todo>(`/todo/${id}/assign`, { assignedTo }),
 };

@@ -65,12 +65,21 @@ namespace Task_hub.Application.Authorization
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
     public class RequireOrganisationAttribute : AuthorizeAttribute
     {
-        public bool RequireAdmin { get; set; }
+        private bool _requireAdmin;
+
+        public bool RequireAdmin
+        {
+            get => _requireAdmin;
+            set
+            {
+                _requireAdmin = value;
+                Policy = value ? "OrgAdmin" : "OrgMember";
+            }
+        }
 
         public RequireOrganisationAttribute(bool requireAdmin = false)
         {
             RequireAdmin = requireAdmin;
-            Policy = requireAdmin ? "OrgAdmin" : "OrgMember";
         }
     }
 }

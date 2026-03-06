@@ -2,12 +2,28 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  organisations: AuthOrg[];
+  pendingInvitationCount: number;
+}
+
+export interface AuthOrg {
+  id: string;
+  name: string;
+  role: string;
 }
 
 export interface Organisation {
   id: string;
   name: string;
   createdAt: string;
+}
+
+export interface Member {
+  userId: string;
+  username: string;
+  email: string;
+  role: string;
+  joinedAt: string;
 }
 
 export interface Todo {
@@ -21,7 +37,21 @@ export interface Todo {
   createdAt: string;
   updatedAt: string;
   deletedAt?: string;
+  assignedTo?: string;
+  assignedToUsername?: string;
   version: string;
+}
+
+export interface Invitation {
+  id: string;
+  organisationId: string;
+  organisationName: string;
+  email: string;
+  role: string;
+  invitedByUsername: string;
+  createdAt: string;
+  status: string;
+  respondedAt?: string;
 }
 
 export interface AuditEntry {

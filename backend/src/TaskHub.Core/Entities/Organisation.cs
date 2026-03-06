@@ -17,5 +17,6 @@ namespace TaskHub.Core.Entities
         public ICollection<Membership> Memberships { get; set; } = new List<Membership>();
         public ICollection<Todo> Todos { get; set; } = new List<Todo>();
         public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+        public ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
     }
 }

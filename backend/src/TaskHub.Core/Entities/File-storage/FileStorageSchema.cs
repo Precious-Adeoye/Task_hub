@@ -15,5 +15,6 @@ namespace TaskHub.Core.Entities.File_storage
         public Dictionary<string, MembershipData> Memberships { get; set; } = new(); // Key: $"{userId}:{orgId}"
         public Dictionary<Guid, TodoData> Todos { get; set; } = new();
         public Dictionary<Guid, AuditLogData> AuditLogs { get; set; } = new();
+        public Dictionary<Guid, InvitationData> Invitations { get; set; } = new();
     }
 }

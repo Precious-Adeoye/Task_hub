@@ -17,12 +17,14 @@ namespace TaskHub.Api.Controller
     {
         private readonly IAuthService _authService;
         private readonly IAuditService _auditService;
+        private readonly IStorage _storage;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IAuditService auditService, ILogger<AuthController> logger)
+        public AuthController(IAuthService authService, IAuditService auditService, IStorage storage, ILogger<AuthController> logger)
         {
             _authService = authService;
             _auditService = auditService;
+            _storage = storage;
             _logger = logger;
         }
 
@@ -48,12 +50,7 @@ namespace TaskHub.Api.Controller
             await _authService.SignInAsync(HttpContext, result.User!);
             _logger.LogInformation("User registered: {Username}", request.Username);
 
-            return Ok(new AuthResponse
-            {
-                Id = result.User!.Id,
-                Username = result.User.Username,
-                Email = result.User.Email
-            });
+            return Ok(await BuildAuthResponseAsync(result.User!));
         }
 
         [HttpPost("login")]
@@ -86,12 +83,7 @@ namespace TaskHub.Api.Controller
             await _auditService.AuditAsync("LoginSuccess", "User", result.User.Id.ToString(),
                 $"User '{result.User.Username}' logged in", result.User.Id, Guid.Empty);
 
-            return Ok(new AuthResponse
-            {
-                Id = result.User.Id,
-                Username = result.User.Username,
-                Email = result.User.Email
-            });
+            return Ok(await BuildAuthResponseAsync(result.User));
         }
 
         [Authorize]
@@ -128,12 +120,35 @@ namespace TaskHub.Api.Controller
             if (user is null)
                 return Unauthorized();
 
-            return Ok(new AuthResponse
+            return Ok(await BuildAuthResponseAsync(user));
+        }
+
+        private async Task<AuthResponse> BuildAuthResponseAsync(TaskHub.Core.Entities.User user)
+        {
+            var orgs = await _storage.GetUserOrganisationsAsync(user.Id);
+            var orgResponses = new List<AuthOrgResponse>();
+
+            foreach (var org in orgs)
+            {
+                var membership = await _storage.GetMembershipAsync(user.Id, org.Id);
+                orgResponses.Add(new AuthOrgResponse
+                {
+                    Id = org.Id,
+                    Name = org.Name,
+                    Role = membership?.Role.ToString() ?? "Member"
+                });
+            }
+
+            var pendingInvitations = await _storage.GetPendingInvitationsForEmailAsync(user.Email);
+
+            return new AuthResponse
             {
                 Id = user.Id,
                 Username = user.Username,
-                Email = user.Email
-            });
+                Email = user.Email,
+                Organisations = orgResponses,
+                PendingInvitationCount = pendingInvitations.Count()
+            };
         }
     }
 }

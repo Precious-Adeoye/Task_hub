@@ -6,7 +6,7 @@ namespace Task_hub.Application.Extensions;
 
 public static class MappingExtensions
 {
-    public static TodoResponse ToResponse(this Todo todo)
+    public static TodoResponse ToResponse(this Todo todo, string? assignedToUsername = null)
     {
         return new TodoResponse
         {
@@ -20,6 +20,8 @@ public static class MappingExtensions
             CreatedAt = todo.CreatedAt,
             UpdatedAt = todo.UpdatedAt,
             DeletedAt = todo.DeletedAt,
+            AssignedTo = todo.AssignedTo,
+            AssignedToUsername = assignedToUsername,
             Version = todo.Version
         };
     }

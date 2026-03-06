@@ -14,6 +14,7 @@ public class InMemoryStorage : IStorage
     private readonly ConcurrentDictionary<string, Membership> _memberships = new(); // Key: $"{userId}:{orgId}"
     private readonly ConcurrentDictionary<Guid, Todo> _todos = new();
     private readonly ConcurrentDictionary<Guid, AuditLog> _auditLogs = new();
+    private readonly ConcurrentDictionary<Guid, Invitation> _invitations = new();
 
     // Users
     public Task<User?> GetUserByIdAsync(Guid id) =>
@@ -108,6 +109,13 @@ public class InMemoryStorage : IStorage
         return Task.FromResult(todo);
     }
 
+    public Task<IEnumerable<Todo>> GetTodosAssignedToUserAsync(Guid userId, Guid organisationId)
+    {
+        var todos = _todos.Values
+            .Where(t => t.OrganisationId == organisationId && t.AssignedTo == userId && t.DeletedAt == null);
+        return Task.FromResult(todos);
+    }
+
     public Task<IEnumerable<Todo>> GetTodosAsync(Guid organisationId, TodoFilter? filter = null)
     {
         var query = _todos.Values.Where(t => t.OrganisationId == organisationId);
@@ -191,5 +199,38 @@ public class InMemoryStorage : IStorage
             query = query.Where(l => l.Timestamp <= to.Value);
 
         return Task.FromResult<IEnumerable<AuditLog>>(query.OrderByDescending(l => l.Timestamp));
+    }
+
+    // Invitations
+    public Task<Invitation?> GetInvitationByIdAsync(Guid id) =>
+        Task.FromResult(_invitations.GetValueOrDefault(id));
+
+    public Task<IEnumerable<Invitation>> GetOrganisationInvitationsAsync(Guid organisationId)
+    {
+        var invitations = _invitations.Values
+            .Where(i => i.OrganisationId == organisationId)
+            .OrderByDescending(i => i.CreatedAt);
+        return Task.FromResult<IEnumerable<Invitation>>(invitations);
+    }
+
+    public Task<IEnumerable<Invitation>> GetPendingInvitationsForEmailAsync(string email)
+    {
+        var invitations = _invitations.Values
+            .Where(i => i.Email.Equals(email, StringComparison.OrdinalIgnoreCase)
+                && i.Status == InvitationStatus.Pending)
+            .OrderByDescending(i => i.CreatedAt);
+        return Task.FromResult<IEnumerable<Invitation>>(invitations);
+    }
+
+    public Task AddInvitationAsync(Invitation invitation)
+    {
+        _invitations[invitation.Id] = invitation;
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateInvitationAsync(Invitation invitation)
+    {
+        _invitations[invitation.Id] = invitation;
+        return Task.CompletedTask;
     }
 }

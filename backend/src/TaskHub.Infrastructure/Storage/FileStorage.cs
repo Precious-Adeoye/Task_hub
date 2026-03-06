@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,7 +48,7 @@ namespace TaskHub.Infrastructure.Storage
         {
             var schema = new FileStorageSchema
             {
-                SchemaVersion = 2, // Current version
+                SchemaVersion = 3, // Current version
                 LastModified = DateTime.UtcNow
             };
 
@@ -258,6 +258,14 @@ namespace TaskHub.Infrastructure.Storage
             return null;
         }
 
+        public async Task<IEnumerable<Todo>> GetTodosAssignedToUserAsync(Guid userId, Guid organisationId)
+        {
+            var schema = await ReadSchemaAsync();
+            return schema.Todos.Values
+                .Where(t => t.OrganisationId == organisationId && t.AssignedTo == userId && t.DeletedAt == null)
+                .Select(MapToTodo);
+        }
+
         public async Task<IEnumerable<Todo>> GetTodosAsync(Guid organisationId, TodoFilter? filter = null)
         {
             var schema = await ReadSchemaAsync();
@@ -355,6 +363,53 @@ namespace TaskHub.Infrastructure.Storage
             return query.OrderByDescending(l => l.Timestamp).Select(MapToAuditLog);
         }
 
+        // Invitations
+        public async Task<Invitation?> GetInvitationByIdAsync(Guid id)
+        {
+            var schema = await ReadSchemaAsync();
+            if (schema.Invitations.TryGetValue(id, out var data))
+            {
+                return MapToInvitation(data);
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<Invitation>> GetOrganisationInvitationsAsync(Guid organisationId)
+        {
+            var schema = await ReadSchemaAsync();
+            return schema.Invitations.Values
+                .Where(i => i.OrganisationId == organisationId)
+                .OrderByDescending(i => i.CreatedAt)
+                .Select(MapToInvitation);
+        }
+
+        public async Task<IEnumerable<Invitation>> GetPendingInvitationsForEmailAsync(string email)
+        {
+            var schema = await ReadSchemaAsync();
+            return schema.Invitations.Values
+                .Where(i => i.Email.Equals(email, StringComparison.OrdinalIgnoreCase)
+                    && i.Status == InvitationStatus.Pending)
+                .OrderByDescending(i => i.CreatedAt)
+                .Select(MapToInvitation);
+        }
+
+        public async Task AddInvitationAsync(Invitation invitation)
+        {
+            var schema = await ReadSchemaAsync();
+            schema.Invitations[invitation.Id] = MapToInvitationData(invitation);
+            await WriteSchemaAsync(schema);
+        }
+
+        public async Task UpdateInvitationAsync(Invitation invitation)
+        {
+            var schema = await ReadSchemaAsync();
+            if (schema.Invitations.ContainsKey(invitation.Id))
+            {
+                schema.Invitations[invitation.Id] = MapToInvitationData(invitation);
+                await WriteSchemaAsync(schema);
+            }
+        }
+
         // Mapping methods
         private User MapToUser(UserData data)
         {
@@ -448,6 +503,7 @@ namespace TaskHub.Infrastructure.Storage
                 CreatedAt = data.CreatedAt,
                 UpdatedAt = data.UpdatedAt,
                 DeletedAt = data.DeletedAt,
+                AssignedTo = data.AssignedTo,
                 Version = data.Version
             };
         }
@@ -468,7 +524,38 @@ namespace TaskHub.Infrastructure.Storage
                 CreatedAt = todo.CreatedAt,
                 UpdatedAt = todo.UpdatedAt,
                 DeletedAt = todo.DeletedAt,
+                AssignedTo = todo.AssignedTo,
                 Version = todo.Version
+            };
+        }
+
+        private Invitation MapToInvitation(InvitationData data)
+        {
+            return new Invitation
+            {
+                Id = data.Id,
+                OrganisationId = data.OrganisationId,
+                Email = data.Email,
+                Role = data.Role,
+                InvitedBy = data.InvitedBy,
+                CreatedAt = data.CreatedAt,
+                Status = data.Status,
+                RespondedAt = data.RespondedAt
+            };
+        }
+
+        private InvitationData MapToInvitationData(Invitation invitation)
+        {
+            return new InvitationData
+            {
+                Id = invitation.Id,
+                OrganisationId = invitation.OrganisationId,
+                Email = invitation.Email,
+                Role = invitation.Role,
+                InvitedBy = invitation.InvitedBy,
+                CreatedAt = invitation.CreatedAt,
+                Status = invitation.Status,
+                RespondedAt = invitation.RespondedAt
             };
         }
 
@@ -503,5 +590,5 @@ namespace TaskHub.Infrastructure.Storage
                 CorrelationId = log.CorrelationId
             };
         }
-}
+    }
 }
